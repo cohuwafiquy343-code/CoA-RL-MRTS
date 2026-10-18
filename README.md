@@ -6,9 +6,9 @@ Coalition-aware Reinforcement Learning (CoA-RL) constructs schedules for coopera
 
 This repository contains CoA-RL, its three ablation variants, and the RCA-RL, TACO, SAS, and SLPSO comparison methods. Model weights for CoA-RL, the ablations, and RCA-RL are included.
 
-![Illustrative multi-robot task scheduling animation](assets/robot_scheduling.gif)
+![CoA-RL rollout on a small dynamic multi-robot task instance](assets/robot_scheduling.gif)
 
-*Illustrative example of robots leaving the depot, forming task coalitions, and returning to the depot.*
+*CoA-RL rollout on a 12-task dynamic instance. Robot types differ in skills and travel speed; task requirements, execution times, coalition arrivals, and return trips follow the saved instance and its computed schedule. The callout shows the local completion-time change when an additional robot joins an executing task.*
 
 ## Code structure
 
@@ -16,6 +16,7 @@ This repository contains CoA-RL, its three ablation variants, and the RCA-RL, TA
 - `src/coa_rl_mrta/baselines/`: RCA-RL, TACO, SAS, and SLPSO.
 - `src/coa_rl_mrta/models/`: model weights for the learned methods.
 - `examples/instances/`: three G01 instances (30 tasks, 5 robots) from the original S-EC, S-HC, and D-HC test sets.
+- `examples/instances/demo_dynamic_small.npz`: the 12-task demonstration instance shown above.
 - `src/coa_rl_mrta/solve.py` and `src/coa_rl_mrta/__main__.py`: Python and command-line interfaces.
 
 ## Running instructions
@@ -39,9 +40,10 @@ Run a supplied test instance with any method:
 
 ```bash
 python -m coa_rl_mrta --method rca-rl --instance examples/instances/g01_s_ec.npz
+python -m coa_rl_mrta --method coa-rl --instance examples/instances/demo_dynamic_small.npz
 ```
 
-The three example files are the first instances in the original G01 S-EC, S-HC, and D-HC test groups. They contain instance data only.
+The three G01 files are the first instances in the original S-EC, S-HC, and D-HC test groups. They contain instance data only.
 
 The `--method` options are `coa-rl`, `coa-rl-nca`, `coa-rl-nrt`, `coa-rl-ncr`, `rca-rl`, `taco`, `sas`, and `slpso`. Group numbers `1`–`13` directly correspond to the paper labels `G01`–`G13`. Instance types `1`, `2`, and `3` correspond to S-EC, S-HC, and D-HC. For learned methods, `--samples 10` evaluates ten sampled schedules for the same instance and returns the best feasible schedule.
 
