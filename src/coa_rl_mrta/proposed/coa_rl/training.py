@@ -235,14 +235,14 @@ def train(
                 )
             scheduler.step()
 
-    destination = Path(output or "output/ahd_rl.pt")
+    destination = Path(output or "output/coa_rl.pt")
     destination.parent.mkdir(parents=True, exist_ok=True)
     torch.save(model.cpu().state_dict(), destination)
     return destination
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Train AHD-RL on generated instances")
+    parser = argparse.ArgumentParser(description="Train CoA-RL on generated instances")
     parser.add_argument("--groups", nargs="+", type=_group_id, default=[1])
     parser.add_argument("--epochs-per-stage", type=int, default=1)
     parser.add_argument("--updates-per-epoch", type=int, default=1)

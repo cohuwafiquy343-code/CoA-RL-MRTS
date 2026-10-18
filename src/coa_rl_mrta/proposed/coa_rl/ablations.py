@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from .config import DM
 from .model import SchedulingNetwork
 
-ABLATION_VARIANTS = ("ahd-rl-nca", "ahd-rl-nrt", "ahd-rl-ncr")
+ABLATION_VARIANTS = ("coa-rl-nca", "coa-rl-nrt", "coa-rl-ncr")
 
 
 class _IdentityCrossDecoder(nn.Module):
@@ -54,11 +54,11 @@ class AblationSchedulingNetwork(SchedulingNetwork):
         self.ablation_variant = variant
         super().__init__(dropout=dropout)
 
-        if self.ablation_variant == "ahd-rl-nca":
+        if self.ablation_variant == "coa-rl-nca":
             # NCA removes both directions of task-agent cross-attention.
             self.cross_t2r = _IdentityCrossDecoder()
             self.cross_r2t = _IdentityCrossDecoder()
-        elif self.ablation_variant == "ahd-rl-nrt":
+        elif self.ablation_variant == "coa-rl-nrt":
             # The two decision phases place reference timing in different columns.
             self.task_emb_sel = _InputMaskedLinear.from_linear(
                 self.task_emb_sel, [6, 7, 12, 13, 14]
@@ -66,7 +66,7 @@ class AblationSchedulingNetwork(SchedulingNetwork):
             self.task_emb_rob = _InputMaskedLinear.from_linear(
                 self.task_emb_rob, [11, 12, 17, 18, 19]
             )
-        elif self.ablation_variant == "ahd-rl-ncr":
+        elif self.ablation_variant == "coa-rl-ncr":
             # NCR removes member flags and the current coalition embedding.
             self.robot_emb_rob = _InputMaskedLinear.from_linear(
                 self.robot_emb_rob, [15]
@@ -83,7 +83,7 @@ class AblationSchedulingNetwork(SchedulingNetwork):
         h_r2_sq: torch.Tensor,
         device: torch.device,
     ) -> torch.Tensor:
-        if self.ablation_variant == "ahd-rl-ncr":
+        if self.ablation_variant == "coa-rl-ncr":
             del coal_indices, h_r2_sq
             return torch.zeros(DM, device=device)
         return super().update_coal_state(coal_indices, h_r2_sq, device)

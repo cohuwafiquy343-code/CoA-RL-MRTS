@@ -2,25 +2,25 @@ from pathlib import Path
 import random
 import numpy as np
 import torch
-from .proposed.ahd_rl.environment import ConstructionEnv, generate_instance_by_type
-from .proposed.ahd_rl.model import SchedulingNetwork
-from .proposed.ahd_rl.ablations import ABLATION_VARIANTS, AblationSchedulingNetwork
-from .proposed.ahd_rl.policy import run_episode
+from .proposed.coa_rl.environment import ConstructionEnv, generate_instance_by_type
+from .proposed.coa_rl.model import SchedulingNetwork
+from .proposed.coa_rl.ablations import ABLATION_VARIANTS, AblationSchedulingNetwork
+from .proposed.coa_rl.policy import run_episode
 
 MODELS = {
-    'ahd-rl': 'ahd_rl.pt',
-    'ahd-rl-nca': 'ahd_rl_nca.pt',
-    'ahd-rl-nrt': 'ahd_rl_nrt.pt',
-    'ahd-rl-ncr': 'ahd_rl_ncr.pt',
+    'coa-rl': 'coa_rl.pt',
+    'coa-rl-nca': 'coa_rl_nca.pt',
+    'coa-rl-nrt': 'coa_rl_nrt.pt',
+    'coa-rl-ncr': 'coa_rl_ncr.pt',
     'rca-rl': 'rca_rl.pth',
 }
 DEFAULT_MODEL_DIR = Path(__file__).resolve().parent / 'models'
 
 
-def load_ahd_model(method='ahd-rl', model_dir=DEFAULT_MODEL_DIR, device='cpu'):
-    if method != 'ahd-rl' and method not in ABLATION_VARIANTS:
-        raise ValueError('unknown AHD-RL variant: {}'.format(method))
-    model = SchedulingNetwork() if method == 'ahd-rl' else AblationSchedulingNetwork(method)
+def load_coa_model(method='coa-rl', model_dir=DEFAULT_MODEL_DIR, device='cpu'):
+    if method != 'coa-rl' and method not in ABLATION_VARIANTS:
+        raise ValueError('unknown CoA-RL variant: {}'.format(method))
+    model = SchedulingNetwork() if method == 'coa-rl' else AblationSchedulingNetwork(method)
     state = torch.load(str(Path(model_dir) / MODELS[method]), map_location='cpu')
     model.load_state_dict(state, strict=True)
     return model.to(device).eval()
@@ -58,7 +58,7 @@ def _best_policy_result(candidates):
     return max(candidates, key=lambda result: result['completed_tasks'])
 
 
-def solve(instance, method='ahd-rl', model_dir=DEFAULT_MODEL_DIR,
+def solve(instance, method='coa-rl', model_dir=DEFAULT_MODEL_DIR,
           sample=False, seed=0, max_evals=10000, samples=1):
     if method not in MODELS and method not in ('taco', 'sas', 'slpso'):
         raise ValueError('unknown method: {}'.format(method))
@@ -69,8 +69,8 @@ def solve(instance, method='ahd-rl', model_dir=DEFAULT_MODEL_DIR,
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    if method == 'ahd-rl' or method in ABLATION_VARIANTS:
-        model = load_ahd_model(method, model_dir)
+    if method == 'coa-rl' or method in ABLATION_VARIANTS:
+        model = load_coa_model(method, model_dir)
         candidates = []
         for index in range(samples):
             torch.manual_seed(seed + index)
@@ -105,6 +105,6 @@ def solve(instance, method='ahd-rl', model_dir=DEFAULT_MODEL_DIR,
             'success': bool(completed)}
 
 
-def solve_generated(group=1, type_key='1', seed=123, method='ahd-rl', **kwargs):
+def solve_generated(group=1, type_key='1', seed=123, method='coa-rl', **kwargs):
     instance = generate_instance_by_type(group, type_key, seed)
     return solve(instance, method=method, seed=seed, **kwargs)
