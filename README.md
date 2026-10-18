@@ -6,6 +6,10 @@ Coalition-aware Reinforcement Learning (CoA-RL) constructs schedules for coopera
 
 This repository contains CoA-RL, its three ablation variants, and the RCA-RL, TACO, SAS, and SLPSO comparison methods. Model weights for CoA-RL, the ablations, and RCA-RL are included.
 
+![Illustrative multi-robot task scheduling animation](assets/robot_scheduling.gif)
+
+*Illustrative example of robots leaving the depot, forming task coalitions, and returning to the depot.*
+
 ## Code structure
 
 - `src/coa_rl_mrta/proposed/coa_rl/`: instance generation, scheduling environment, policy network, ablation variants, inference, and training.
