@@ -14,7 +14,7 @@ def _group_id(value):
 
 
 def main():
-    p = argparse.ArgumentParser(description='Solve one MRTA instance')
+    p = argparse.ArgumentParser(description='Solve one MRTS instance')
     p.add_argument('--method', choices=['coa-rl','coa-rl-nca','coa-rl-nrt','coa-rl-ncr',
                                         'rca-rl','taco','sas','slpso'], default='coa-rl')
     p.add_argument('--group', type=_group_id, default=1,

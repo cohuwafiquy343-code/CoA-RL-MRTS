@@ -1,4 +1,4 @@
-# CoA-RL
+# CoA-RL-MRTS
 
 Code for the paper **Coalition-aware Reinforcement Learning for Dynamic Multi-robot Task Scheduling**.
 
@@ -10,12 +10,12 @@ This repository contains CoA-RL, its three ablation variants, and the RCA-RL, TA
 
 ## Code structure
 
-- `src/coa_rl_mrta/proposed/coa_rl/`: instance generation, scheduling environment, policy network, ablation variants, inference, and training.
-- `src/coa_rl_mrta/baselines/`: RCA-RL, TACO, SAS, and SLPSO.
-- `src/coa_rl_mrta/models/`: model weights for the learned methods.
+- `src/coa_rl_mrts/proposed/coa_rl/`: instance generation, scheduling environment, policy network, ablation variants, inference, and training.
+- `src/coa_rl_mrts/baselines/`: RCA-RL, TACO, SAS, and SLPSO.
+- `src/coa_rl_mrts/models/`: model weights for the learned methods.
 - `examples/instances/`: three G01 instances (30 tasks, 5 robots) from the original S-EC, S-HC, and D-HC test sets.
 - `examples/instances/demo_dynamic_small.npz`: the 12-task demonstration instance shown above.
-- `src/coa_rl_mrta/solve.py` and `src/coa_rl_mrta/__main__.py`: Python and command-line interfaces.
+- `src/coa_rl_mrts/solve.py` and `src/coa_rl_mrts/__main__.py`: Python and command-line interfaces.
 
 ## Running instructions
 
@@ -28,17 +28,17 @@ python -m pip install -e .
 Run a method on one generated instance:
 
 ```bash
-python -m coa_rl_mrta --method coa-rl --group G01 --type 1 --seed 123
-python -m coa_rl_mrta --method coa-rl-nca --group G01 --type 1 --seed 123
-python -m coa_rl_mrta --method rca-rl --group G01 --type 1 --seed 123
-python -m coa_rl_mrta --method taco --group G01 --type 1 --seed 123 --max-evals 10000
+python -m coa_rl_mrts --method coa-rl --group G01 --type 1 --seed 123
+python -m coa_rl_mrts --method coa-rl-nca --group G01 --type 1 --seed 123
+python -m coa_rl_mrts --method rca-rl --group G01 --type 1 --seed 123
+python -m coa_rl_mrts --method taco --group G01 --type 1 --seed 123 --max-evals 10000
 ```
 
 Run a supplied test instance with any method:
 
 ```bash
-python -m coa_rl_mrta --method rca-rl --instance examples/instances/g01_s_ec.npz
-python -m coa_rl_mrta --method coa-rl --instance examples/instances/demo_dynamic_small.npz
+python -m coa_rl_mrts --method rca-rl --instance examples/instances/g01_s_ec.npz
+python -m coa_rl_mrts --method coa-rl --instance examples/instances/demo_dynamic_small.npz
 ```
 
 The three G01 files are the first instances in the original S-EC, S-HC, and D-HC test groups. They contain instance data only.
@@ -48,8 +48,8 @@ The `--method` options are `coa-rl`, `coa-rl-nca`, `coa-rl-nrt`, `coa-rl-ncr`, `
 The Python interface accepts an instance in memory:
 
 ```python
-from coa_rl_mrta.proposed.coa_rl.environment import generate_instance_by_type
-from coa_rl_mrta.solve import solve
+from coa_rl_mrts.proposed.coa_rl.environment import generate_instance_by_type
+from coa_rl_mrts.solve import solve
 
 instance = generate_instance_by_type(1, "1", seed=123)  # G01
 result = solve(instance, method="coa-rl", seed=123)
@@ -63,9 +63,9 @@ Python 3.7 or newer, PyTorch, NumPy, and SciPy are required. The models can run 
 Train CoA-RL from scratch on a small group:
 
 ```bash
-python -m coa_rl_mrta.proposed.coa_rl.training --groups G01 --instances-per-update 1 --trajectories 2
+python -m coa_rl_mrts.proposed.coa_rl.training --groups G01 --instances-per-update 1 --trajectories 2
 ```
 
 The defaults use four instances and eight sampled trajectories per update. Passing multiple groups trains in small-, medium-, then large-instance order. Only the final model weights are written to `output/`.
 
-The RCA-RL code is adapted from [HeteroMRTA](https://github.com/marmotlab/HeteroMRTA); see its [source and license notes](src/coa_rl_mrta/baselines/rca_rl/SOURCE.md). This repository uses the [Apache-2.0 License](LICENSE).
+The RCA-RL code is adapted from [HeteroMRTA](https://github.com/marmotlab/HeteroMRTA); see its [source and license notes](src/coa_rl_mrts/baselines/rca_rl/SOURCE.md). This repository uses the [Apache-2.0 License](LICENSE).

@@ -3,12 +3,12 @@ from setuptools import find_packages, setup
 setup(
     name="coa-rl-paper-code",
     version="1.0.0",
-    description="Single-instance CoA-RL and comparison methods for MRTA",
+    description="Single-instance CoA-RL and comparison methods for MRTS",
     packages=find_packages("src"),
     package_dir={"": "src"},
     package_data={
-        "coa_rl_mrta": ["models/*.pt", "models/*.pth"],
-        "coa_rl_mrta.baselines.rca_rl": ["SOURCE.md", "THIRD_PARTY_LICENSE"],
+        "coa_rl_mrts": ["models/*.pt", "models/*.pth"],
+        "coa_rl_mrts.baselines.rca_rl": ["SOURCE.md", "THIRD_PARTY_LICENSE"],
     },
     license_files=["LICENSE"],
     python_requires=">=3.7",
