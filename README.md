@@ -8,8 +8,6 @@ This repository contains CoA-RL, its three ablation variants, and the RCA-RL, TA
 
 ![CoA-RL rollout on a small dynamic multi-robot task instance](assets/robot_scheduling.gif)
 
-*CoA-RL rollout on a 12-task dynamic instance. Robot types differ in skills and travel speed; task requirements, execution times, coalition arrivals, and return trips follow the saved instance and its computed schedule. The callout shows the local completion-time change when an additional robot joins an executing task.*
-
 ## Code structure
 
 - `src/coa_rl_mrta/proposed/coa_rl/`: instance generation, scheduling environment, policy network, ablation variants, inference, and training.
