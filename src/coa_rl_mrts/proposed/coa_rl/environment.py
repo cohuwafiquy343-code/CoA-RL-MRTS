@@ -177,6 +177,14 @@ def has_contribution(cap_j: np.ndarray, req_i: np.ndarray) -> bool:
     return bool(np.any((cap_j > 0) & (req_i > 0)))
 
 
+def _execution_time_from_capability(cap_sum: int, req_sum: int, task_dur: float) -> float:
+    if req_sum == 0:
+        return float(task_dur)
+    excess = max(0, cap_sum - req_sum)
+    speedup = min(excess / req_sum, 0.75)
+    return float(task_dur) * (1.0 - speedup)
+
+
 def coalition_exec_time(
     coal_set: Set[int],
     robots_cap: np.ndarray,
@@ -191,9 +199,7 @@ def coalition_exec_time(
     if not contributing:
         return float(task_dur_i)
     cap_sum = int(sum(robots_cap[j].sum() for j in contributing))
-    excess = max(0, cap_sum - req_sum)
-    sr = min(excess / req_sum, 0.75)
-    return float(task_dur_i) * (1.0 - sr)
+    return _execution_time_from_capability(cap_sum, req_sum, task_dur_i)
 
 
 def coalition_satisfies(
@@ -319,25 +325,29 @@ class ConstructionEnv:
         inst = self.inst
         sorted_m = sorted(coalition, key=lambda j: arr[j])
         cum_cap = np.zeros(D_CAP, dtype=np.int64)
+        req = inst['task_req'][i]
+        req_sum = int(req.sum())
+        duration = inst['task_duration'][i]
+        contributing_cap_sum = 0
         prefix_end = -1
         for k, j in enumerate(sorted_m):
-            cum_cap += inst['robots_cap'][j]
-            if np.all(cum_cap >= inst['task_req'][i]):
+            cap_j = inst['robots_cap'][j]
+            cum_cap += cap_j
+            if has_contribution(cap_j, req):
+                contributing_cap_sum += int(cap_j.sum())
+            if np.all(cum_cap >= req):
                 prefix_end = k
                 break
         if prefix_end < 0:
             return INF, INF
 
-        init_coal = set(sorted_m[:prefix_end + 1])
         t_sat = arr[sorted_m[prefix_end]]
-        et = coalition_exec_time(
-            init_coal, inst['robots_cap'], inst['task_req'][i], inst['task_duration'][i])
+        et = _execution_time_from_capability(contributing_cap_sum, req_sum, duration)
         t_complete = t_sat + et
 
         progress = 0.0
         cur_et = et
         last_seg = t_sat
-        cur_coal = set(init_coal)
         for j_late in sorted_m[prefix_end + 1:]:
             t_late = arr[j_late]
             if t_late >= t_complete:
@@ -346,9 +356,10 @@ class ConstructionEnv:
             if cur_et > EPS:
                 progress += delta / cur_et
             progress = min(progress, 1.0 - EPS)
-            cur_coal.add(j_late)
-            new_et = coalition_exec_time(
-                cur_coal, inst['robots_cap'], inst['task_req'][i], inst['task_duration'][i])
+            cap_j = inst['robots_cap'][j_late]
+            if has_contribution(cap_j, req):
+                contributing_cap_sum += int(cap_j.sum())
+            new_et = _execution_time_from_capability(contributing_cap_sum, req_sum, duration)
             t_complete = t_late + (1.0 - progress) * new_et
             cur_et = new_et
             last_seg = t_late
